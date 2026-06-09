@@ -302,9 +302,5 @@ This project was developed during an internship at IIT Goa as part of research i
 
 ## Author
 
-**Aditya [Last Name]**
-
-B.Tech Student  
-Computer Vision and Machine Learning Enthusiast
-
-Developed a YOLO-CFNN Hybrid Framework for Ultrasonic Weld Defect Detection and Quantification.
+**Aditya Singh**
+B.Tech Student at IIT Goa
