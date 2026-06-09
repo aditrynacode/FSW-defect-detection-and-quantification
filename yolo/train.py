@@ -1,6 +1,5 @@
 from ultralytics import YOLO
 
-
 def main():
 
     model = YOLO("yolov8n.pt")
@@ -22,8 +21,6 @@ def main():
         save=True,
         verbose=True
     )
-    
-
 
 if __name__ == "__main__":
     main()
