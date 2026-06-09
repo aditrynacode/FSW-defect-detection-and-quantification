@@ -22,3 +22,5 @@ runs/
 # OS files
 .DS_Store
 Thumbs.db
+
+*.cache
