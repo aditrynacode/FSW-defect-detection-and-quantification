@@ -19,7 +19,12 @@ def main():
         name="weld_defect",
         pretrained=True,
         save=True,
-        verbose=True
+        verbose=True,
+
+        mosaic=0.0,
+        fliplr=0.5,
+        translate=0.1,
+        scale=0.3
     )
 
 if __name__ == "__main__":
