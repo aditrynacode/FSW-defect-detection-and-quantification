@@ -59,6 +59,24 @@ def warp_to_paper_triangle(
         mask=mask
     )
 
+    remove_triangle = np.array([
+        [234, 1],    # top
+        [198, 40],   # bottom left
+        [271, 40]    # bottom right
+    ], dtype=np.int32)
+
+    remove_mask = np.zeros(
+        (output_height, output_width),
+        dtype=np.uint8
+    )
+
+    cv2.fillPoly(
+        remove_mask,
+        [remove_triangle],
+        255
+    )
+    warped_masked[remove_mask == 255] = 0
+
     return warped_masked
 
 
