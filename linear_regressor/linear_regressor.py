@@ -6,8 +6,6 @@ import numpy as np
 
 df = pd.read_csv("C:/Users/adity/FSW_Defect_Detection/dataset/quantification/quantification_ds.csv")
 
-df = df.dropna(subset=["depth", "defect width", "defect height"])
-
 # Width model
 X_width = df[["w"]]
 y_width = df["defect width"]
@@ -51,12 +49,14 @@ print(
     f"{depth_model.intercept_:.4f}"
 )
 
+"""
 def predict_defect(cy, w, h, area):
     pred_width = width_model.predict([[w]])[0]
     pred_height = height_model.predict([[h]])[0]
     pred_depth = depth_model.predict([[cy, area]])[0]
 
     return pred_width, pred_height, pred_depth
+"""
 
 loo = LeaveOneOut()
 
