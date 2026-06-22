@@ -1,150 +1,173 @@
-# Friction Stir Weld Defect Detection using YOLOv8 and Ultrasonic NDT Imaging
+# Friction Stir Weld Defect Detection and Quantification using YOLOv8 and Ultrasonic NDT Imaging
 
 ## Overview
 
-This project presents an automated computer vision pipeline for detecting defects in Friction Stir Welded (FSW) joints using Ultrasonic Non-Destructive Testing (NDT) scan images.
+This project presents an end-to-end computer vision pipeline for automated defect detection and dimensional quantification in Friction Stir Welded (FSW) joints using Ultrasonic Non-Destructive Testing (NDT) S-scan images.
 
-The system combines image preprocessing, region-of-interest extraction, dataset annotation, and YOLOv8-based object detection to automatically identify defect regions within ultrasonic weld inspection scans.
+The system combines image preprocessing, region-of-interest extraction, defect localization using YOLOv8, and regression-based dimensional estimation to identify weld defects and predict their physical dimensions from ultrasonic inspection data.
 
-Developed during an internship at IIT Goa, this work aims to reduce dependence on manual inspection and provide a foundation for automated defect localization and quantification in industrial weld quality assessment.
-
----
-
-## Objectives
-
-- Detect weld defects from ultrasonic S-scan images.
-- Automate defect localization using deep learning.
-- Reduce manual inspection effort.
-- Develop a preprocessing pipeline tailored to ultrasonic NDT scans.
-- Create a framework that can later be extended for defect dimension estimation and quantification.
+Developed during an internship at IIT Goa, the project aims to reduce dependence on manual inspection while providing a scalable framework for automated weld quality assessment.
 
 ---
 
-## Project Pipeline
+## Key Features
+
+- Automated preprocessing of ultrasonic S-scan images
+- Triangular ROI extraction and geometric transformation
+- YOLOv8-based defect detection and localization
+- Manual and semi-automatic annotation workflow
+- Extraction of defect geometric features from detected bounding boxes
+- Regression-based estimation of:
+  - Defect Width
+  - Defect Height
+  - Defect Depth
+- Leave-One-Out Cross Validation (LOOCV) based model evaluation
+
+---
+
+## System Pipeline
 
 ```text
-Raw Ultrasonic Scan
-        │
-        ▼
+Raw Ultrasonic S-Scan
+          │
+          ▼
 Image Preprocessing
-        │
-        ▼
-ROI Extraction
-(Triangular Scan Region)
-        │
-        ▼
-Image Enhancement
-        │
-        ▼
-Bounding Box Annotation
-        │
-        ▼
-YOLOv8 Training
-        │
-        ▼
-Defect Localization
-        │
-        ▼
-Defect Quantification (Future Work)
+          │
+          ▼
+ROI Extraction & Enhancement
+          │
+          ▼
+YOLOv8 Defect Detection
+          │
+          ▼
+Bounding Box Feature Extraction
+(cx, cy, w, h, area)
+          │
+          ▼
+Regression Models
+          │
+          ▼
+Defect Width
+Defect Height
+Defect Depth
 ```
 
 ---
 
 ## Dataset
 
-The dataset consists of ultrasonic inspection scans acquired from Friction Stir Welded specimens.
+The dataset consists of ultrasonic inspection scans collected from Friction Stir Welded specimens.
 
-### Classes
+The dataset contains both defective and defect-free weld scans to improve detector robustness and reduce false positives.
 
-| Class ID | Class Name |
-|-----------|------------|
-| 0 | Defect |
+### Quantification Dataset
 
-### Dataset Split
+A separate quantification dataset was created containing:
 
-| Split | Purpose |
-|---------|----------|
-| Train | Model training |
-| Validation | Performance evaluation |
+- Bounding box features extracted from defect regions
+- Measured defect dimensions obtained from inspection records
 
-The dataset contains both:
+Features investigated include:
 
-- Defective weld scans
-- Defect-free weld scans (background images)
-
-to improve detector robustness and reduce false positives.
+- Bounding box center coordinates (`cx`, `cy`)
+- Bounding box dimensions (`w`, `h`)
+- Bounding box area
 
 ---
 
 ## Image Preprocessing
 
-Raw ultrasonic scans contain significant irrelevant regions that do not contribute to defect detection.
+A custom preprocessing pipeline was developed to isolate relevant ultrasonic information and improve defect visibility.
 
-A custom preprocessing pipeline was developed to:
+### Processing Steps
 
-### 1. Region of Interest Extraction
+1. Cropping to remove Scales
+2. Grayscale Conversion
+3. Gaussian Noise Reduction
+4. Contrast Enhancement using CLAHE
+5. Thresholding and Contour Detection
+6. ROI Identification 
+7. Triangular ROI Extraction using OpenCV's `minEnclosingTriangle()`
+8. Geometric Transformation and Normalization
 
-Extract only the triangular ultrasonic scan region containing relevant inspection information.
-
-### 2. Noise Reduction
-
-Reduce unwanted artifacts and improve signal visibility.
-
-### 3. Image Enhancement
-
-Improve contrast and feature visibility for defect patterns.
-
-### 4. Geometric Filtering
-
-Remove unnecessary background regions while preserving weld indications.
-
-This preprocessing stage ensures that the detector focuses on meaningful ultrasonic information rather than irrelevant image content.
+The resulting images contain only the relevant ultrasonic inspection region used for training and inference.
 
 ---
 
 ## Data Annotation
 
-Defect regions were annotated using bounding boxes in YOLO format.
+Defect regions were annotated using YOLO-format bounding boxes.
 
-### Challenges Encountered
+### Annotation Workflow
 
 #### Manual Annotation
 
-- Time-consuming process
-- Required careful interpretation of ultrasonic indications
-- Limited availability of labeled data
+- Expert-guided defect localization
+- Bounding box generation for training data
+- Quality verification of labels
 
-#### Automatic Annotation Attempts
+#### Semi-Automatic Annotation
 
-Computer vision techniques were explored to generate annotations automatically.
-
-Approaches investigated included:
+Several computer vision approaches were explored:
 
 - Thresholding
-- Edge detection
-- Contour extraction
-- ROI-based segmentation
+- Contour Detection
+- Edge-Based Segmentation
+- ROI-Based Candidate Extraction
 
-While useful for initial experimentation, manual verification remained necessary to ensure annotation quality.
+These methods were explored to accelerate dataset annotation, but manual annotation was used in the end because of insufficient technical accuracy in the automatic approaches.
 
 ---
 
-## Model Architecture
+## Defect Detection Model
 
 ### YOLOv8 Nano
 
-The project utilizes the YOLOv8 Nano architecture for real-time object detection.
+The detection stage utilizes the YOLOv8 Nano architecture.
 
-Reasons for selection:
+#### Advantages
 
 - Lightweight architecture
 - Fast training and inference
-- Strong performance on limited datasets
-- Easy deployment
+- Strong performance on limited dataset
+- Suitable for future deployment applications
 
 ### Transfer Learning
 
-Pretrained YOLOv8 weights were used as the initialization point to improve performance despite limited training data.
+Training was performed using pretrained YOLOv8 weights to improve convergence and detection performance, given the constraint of a small dataset.
+
+---
+
+## Defect Quantification
+
+Following defect localization, bounding box features are extracted and used as inputs to regression models.
+
+### Target Variables
+
+- Defect Width
+- Defect Height
+- Defect Depth
+
+### Regression Workflow
+
+```text
+Detected Bounding Box
+        │
+        ▼
+Feature Extraction
+(cx, cy, w, h, area)
+        │
+        ▼
+Feature Selection
+        │
+        ▼
+Linear Regression Models
+        │
+        ▼
+Dimension Estimation
+```
+
+Feature importance studies were conducted to determine the most informative geometric features for each target dimension.
 
 ---
 
@@ -155,31 +178,44 @@ Pretrained YOLOv8 weights were used as the initialization point to improve perfo
 | Model | YOLOv8n |
 | Image Size | 640 × 640 |
 | Batch Size | 4 |
-| Optimizer | AdamW |
-| Epochs | Up to 100 |
-| Early Stopping | Enabled |
+| Epochs | 100 |
 | Framework | Ultralytics YOLOv8 |
 | Hardware | NVIDIA RTX 3050 Laptop GPU |
 
 ---
 
-## Results
-
-Best validation results obtained during training:
+## Detection Results
 
 | Metric | Value |
-|-----------|-----------|
-| Precision | 0.901 |
-| Recall | 0.833 |
-| mAP@50 | 0.946 |
-| mAP@50-95 | 0.492 |
+|----------|----------|
+| Precision | 1 |
+| Recall | 0.912 |
+| mAP@50 | 0.984 |
+| mAP@50-95 | 0.511 |
 
-### Interpretation
+These results demonstrate reliable defect localization despite a relatively limited training dataset.
 
-- High mAP@50 indicates strong defect localization capability.
-- Precision above 90% indicates low false-positive detections.
-- Recall above 83% indicates the majority of defects were successfully detected.
-- Performance was achieved despite a limited labeled dataset.
+---
+
+## Quantification Results
+
+Defect dimension estimation models were evaluated using Leave-One-Out Cross Validation (LOOCV).
+
+Performance metrics reported include:
+
+- Mean Absolute Error (MAE)
+- Root Mean Squared Error (RMSE)
+- Coefficient of Determination (R²)
+
+The regression framework enables automated estimation of physical defect dimensions directly from detected ultrasonic indications.
+
+| Target | MAE | RMSE | R² |
+|---------|---------|---------|---------|
+| Width | 0.7359 | 0.9714 | 0.4712 |
+| Height | 0.1491 | 0.2072 | 0.4707 |
+| Depth | 0.2205 | 0.3247 | 0.7218 |
+
+The moderate R² values obtained are largely attributable to the limited dataset size (49 samples). With such a small number of observations, regression models are more susceptible to noise, outliers, and overfitting, making highly accurate dimensional prediction challenging. Increasing the size and diversity of the quantification dataset is expected to significantly improve performance.
 
 ---
 
@@ -192,6 +228,8 @@ FSW_Defect_Detection/
 │   ├── images/
 │   ├── labels/
 │   ├── raw_images/
+│   ├── quantification/
+│   │   └── quantification_ds.csv
 │   └── weld.yaml
 │
 ├── preprocessing/
@@ -200,13 +238,13 @@ FSW_Defect_Detection/
 ├── yolo/
 │   └── train.py
 │
-├── cfnn/
-│
-├── outputs/
+├── linear_regressor/
+│   └── linear_regressor.py
 │
 ├── runs/
 │
 ├── yolov8n.pt
+├── yolo26n.pt
 │
 └── README.md
 ```
@@ -215,36 +253,13 @@ FSW_Defect_Detection/
 
 ## Installation
 
-Clone the repository:
-
 ```bash
 git clone https://github.com/<username>/<repository>.git
 cd FSW_Defect_Detection
-```
 
-Create a virtual environment:
-
-```bash
 python -m venv venv
-```
-
-Activate it:
-
-### Windows
-
-```bash
 venv\Scripts\activate
-```
 
-### Linux / macOS
-
-```bash
-source venv/bin/activate
-```
-
-Install dependencies:
-
-```bash
 pip install -r requirements.txt
 ```
 
@@ -252,51 +267,46 @@ pip install -r requirements.txt
 
 ## Training
 
-Run:
-
 ```bash
 python yolo/train.py
 ```
 
-or
+---
+
+## Quantification
 
 ```bash
-yolo detect train model=yolov8n.pt data=dataset/weld.yaml
+python linear_regressor/linear_regressor.py
 ```
+
+This script performs feature evaluation, model training, and dimensional prediction experiments.
 
 ---
 
-## Inference
+## Reproducibility
 
-```python
-from ultralytics import YOLO
+To ensure compatibility and reproduce the same software environment used during development and experimentation, install all dependencies using the provided `requirements.txt` file:
 
-model = YOLO("best.pt")
-
-results = model.predict(
-    source="image.png",
-    save=True,
-    conf=0.25
-)
+```bash
+pip install -r requirements.txt
 ```
+
+This installs the exact package versions used for preprocessing, model training, defect detection, and dimensional quantification.
 
 ---
 
 ## Future Work
 
-- Increase dataset size.
-- Improve annotation quality.
-- Implement defect dimension estimation.
-- Integrate CFNN-based defect quantification.
-- Explore instance segmentation models.
-- Evaluate performance on additional weld types.
-- Develop a complete automated NDT analysis pipeline.
+- Expand dataset size
+- Explore nonlinear regression models
+- Investigate neural-network-based quantification methods
+- Extend framework to additional weld inspection techniques
 
 ---
 
 ## Acknowledgements
 
-This project was developed during an internship at IIT Goa as part of research in automated ultrasonic weld inspection and defect detection using deep learning and computer vision techniques.
+Developed during an internship at IIT Goa as part of research on automated ultrasonic weld inspection, defect localization, and dimensional quantification using computer vision and machine learning.
 
 ---
 
@@ -304,4 +314,5 @@ This project was developed during an internship at IIT Goa as part of research i
 
 **Aditya Singh**
 
-B.Tech Student at IIT Goa
+B.Tech Mechanical Engineering  
+Indian Institute of Technology Goa
