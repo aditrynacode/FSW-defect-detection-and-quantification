@@ -2,18 +2,111 @@ import cv2
 import numpy as np
 import os
 
+src = cv2.imread(r"C:\Users\adity\FSW_Defect_Detection\dataset\raw_images\train\BI19-D3.png")
+
+if src is None:
+    raise ValueError(f"Could not load image.")
+
+height, width = src.shape[:2]
+
+src = src[
+    0:src.shape[0]-34,
+    0:src.shape[1]-170
+]
+
+gray = cv2.cvtColor(
+    src,
+    cv2.COLOR_BGR2GRAY
+)
+
+blurred = cv2.GaussianBlur(
+    gray,
+    (5, 5),
+    1.5
+)
+
+clahe = cv2.createCLAHE(
+    clipLimit=1.0,
+    tileGridSize=(8, 8)
+)
+
+enhanced = clahe.apply(
+    blurred
+)
+
+_, thresh = cv2.threshold(
+    enhanced,
+    0,
+    255,
+    cv2.THRESH_BINARY + cv2.THRESH_OTSU
+)
+
+contours, _ = cv2.findContours(
+    thresh,
+    cv2.RETR_EXTERNAL,
+    cv2.CHAIN_APPROX_SIMPLE
+)
+
+if len(contours) == 0:
+    raise RuntimeError(
+        "No contours found"
+    )
+
+largest = max(
+    contours,
+    key=cv2.contourArea
+)
+
+hull = cv2.convexHull(
+    largest
+)
+
+area, triangle = cv2.minEnclosingTriangle(
+    hull
+)
+
+triangle = triangle.reshape(
+    3,
+    2
+)
+
+triangle = np.int32(
+    triangle
+)
+
+triangle = triangle[
+    np.argsort(
+        triangle[:, 1]
+    )
+]
+
+top = triangle[0]
+
+bottom = triangle[1:]
+
+bottom = bottom[
+    np.argsort(
+        bottom[:, 0]
+    )
+]
+
+V1 = tuple(top)         # Apex
+V2 = tuple(bottom[0])   # Bottom Left
+V3 = tuple(bottom[1])   # Bottom Right
+
+# We only calculate vertices once as all the images are of same composition, hence we need not compute them again and again for every image
 
 def warp_to_paper_triangle(
     img,
+    V1, V2, V3,
     output_width=469,
     output_height=252
 ):
-
+    """
     V1 = (637, 0)      # Top left
-    V2 = (743, 0)      # Top right
     V2 = (1327, 692)     # Bottom Left
     V3 = (1743, 309)     # Bottom Right
-
+    """
     src_pts = np.float32([V1, V2, V3])
 
     dst_pts = np.float32([
@@ -120,7 +213,12 @@ def process_dataset(
                 print(f"Could not read: {img_path}")
                 continue
 
-            warped = warp_to_paper_triangle(img)
+            img = img[
+                0:img.shape[0]-34,
+                0:img.shape[1]-170
+            ]
+            
+            warped = warp_to_paper_triangle(img, V1, V2, V3)
 
             save_path = os.path.join(
                 save_dir,
