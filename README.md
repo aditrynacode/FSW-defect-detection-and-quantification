@@ -209,11 +209,11 @@ Performance metrics reported include:
 
 The regression framework enables automated estimation of physical defect dimensions directly from detected ultrasonic indications.
 
-| Target | MAE | RMSE | R² |
-|---------|---------|---------|---------|
-| Width | 0.7359 | 0.9714 | 0.4712 |
-| Height | 0.1491 | 0.2072 | 0.4707 |
-| Depth | 0.2205 | 0.3247 | 0.7218 |
+| Target | MAE | RMSE |
+|---------|---------|---------|
+| Width | 0.7359 | 0.9714 |
+| Height | 0.1491 | 0.2072 |
+| Depth | 0.2205 | 0.3247 |
 
 The moderate R² values obtained are largely attributable to the limited dataset size (49 samples). With such a small number of observations, regression models are more susceptible to noise, outliers, and overfitting, making highly accurate dimensional prediction challenging. Increasing the size and diversity of the quantification dataset is expected to significantly improve performance.
 
