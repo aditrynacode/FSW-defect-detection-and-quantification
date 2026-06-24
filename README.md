@@ -225,7 +225,7 @@ The moderate R² values obtained are largely attributable to the limited dataset
 FSW_Defect_Detection/
 │
 ├── dataset/
-│   ├── external_defects/
+│   ├── surface_defects/
 │   │   ├── images/
 │   │   └── labels/
 │   │
@@ -242,7 +242,7 @@ FSW_Defect_Detection/
 │   ├── train.py
 │   └── linear_regressor.py
 │
-├── external_defects/
+├── surface_defects/
 │   └── train.py
 │
 ├── runs/
