@@ -5,7 +5,7 @@ def main():
     model = YOLO("yolov8n.pt")
 
     model.train(
-        data="dataset/weld.yaml",
+        data="dataset/internal_defects/weld.yaml",
         epochs=100,
         imgsz=640,
         batch=4,

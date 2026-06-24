@@ -225,26 +225,33 @@ The moderate R² values obtained are largely attributable to the limited dataset
 FSW_Defect_Detection/
 │
 ├── dataset/
-│   ├── images/
-│   ├── labels/
-│   ├── raw_images/
-│   ├── quantification/
-│   │   └── quantification_ds.csv
-│   └── weld.yaml
+│   ├── external_defects/
+│   │   ├── images/
+│   │   └── labels/
+│   │
+│   ├── internal_defects/
+│   │   ├── images/
+│   │   ├── labels/
+│   │   ├── quantification/
+│   │   │   └── quantification_ds.csv
+│   │   ├── raw_images/
+│   │   └── weld.yaml
 │
-├── preprocessing/
-│   └── preprocess.py
-│
-├── yolo/
-│   └── train.py
-│
-├── linear_regressor/
+├── internal_defects/
+│   ├── preprocess.py
+│   ├── train.py
 │   └── linear_regressor.py
+│
+├── external_defects/
+│   └── train.py
 │
 ├── runs/
 │
 ├── yolov8n.pt
-├── yolo26n.pt
+│
+├── requirements.txt
+│
+├── .gitignore
 │
 └── README.md
 ```

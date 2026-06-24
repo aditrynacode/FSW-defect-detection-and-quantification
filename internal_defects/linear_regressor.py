@@ -4,7 +4,7 @@ from sklearn.model_selection import LeaveOneOut, cross_val_predict
 from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
 import numpy as np
 
-df = pd.read_csv("C:/Users/adity/FSW_Defect_Detection/dataset/quantification/quantification_ds.csv")
+df = pd.read_csv("C:/Users/adity/FSW_Defect_Detection/dataset/internal_defects/quantification/quantification_ds.csv")
 
 # Width model
 X_width = df[["w"]]

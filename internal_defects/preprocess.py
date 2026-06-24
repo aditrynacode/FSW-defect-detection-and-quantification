@@ -2,7 +2,7 @@ import cv2
 import numpy as np
 import os
 
-src = cv2.imread(r"C:\Users\adity\FSW_Defect_Detection\dataset\raw_images\train\BI19-D3.png")
+src = cv2.imread(r"C:\Users\adity\FSW_Defect_Detection\dataset\internal_defects\raw_images\train\BI19-D3.png")
 
 if src is None:
     raise ValueError(f"Could not load image.")
@@ -233,8 +233,8 @@ def process_dataset(
             print(f"Saved: {save_path}")
 
 
-SOURCE_ROOT = r"dataset\raw_images"
-DESTINATION_ROOT = r"dataset\images"
+SOURCE_ROOT = r"dataset\internal_defects\raw_images"
+DESTINATION_ROOT = r"dataset\internal_defects\images"
 
 process_dataset(SOURCE_ROOT, DESTINATION_ROOT)
 
