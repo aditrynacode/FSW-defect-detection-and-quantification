@@ -1,221 +1,125 @@
-# Friction Stir Weld Defect Detection and Quantification using YOLOv8 and Ultrasonic NDT Imaging
+# Friction Stir Weld Defect Detection and Quantification using YOLOv8
 
 ## Overview
 
-This project presents an end-to-end computer vision pipeline for automated defect detection and dimensional quantification in Friction Stir Welded (FSW) joints using Ultrasonic Non-Destructive Testing (NDT) S-scan images.
+This repository presents two computer vision pipelines developed for automated inspection of Friction Stir Welded (FSW) joints:
 
-The system combines image preprocessing, region-of-interest extraction, defect localization using YOLOv8, and regression-based dimensional estimation to identify weld defects and predict their physical dimensions from ultrasonic inspection data.
+- **Internal Defect Detection** using Ultrasonic Non-Destructive Testing (NDT) S-scan images.
+- **Surface Defect Detection** using weld surface images.
 
-Developed during an internship at IIT Goa, the project aims to reduce dependence on manual inspection while providing a scalable framework for automated weld quality assessment.
-
----
-
-## Key Features
-
-- Automated preprocessing of ultrasonic S-scan images
-- Triangular ROI extraction and geometric transformation
-- YOLOv8-based defect detection and localization
-- Manual and semi-automatic annotation workflow
-- Extraction of defect geometric features from detected bounding boxes
-- Regression-based estimation of:
-  - Defect Width
-  - Defect Height
-  - Defect Depth
-- Leave-One-Out Cross Validation (LOOCV) based model evaluation
+Developed during an internship at **IIT Goa**, the project aims to reduce manual inspection effort through deep learning-based defect detection and automated defect quantification.
 
 ---
 
-## System Pipeline
+## Features
+
+- YOLOv8-based internal and surface defect detection
+- Ultrasonic S-scan preprocessing and ROI extraction
+- Semi-supervised annotation workflow for surface defect dataset
+- Regression-based internal defect dimension estimation
+- Surface defect quantification relative to weld geometry
+- Transfer learning using pretrained YOLOv8 models
+
+---
+
+# Internal Defect Detection
+
+The internal defect pipeline processes ultrasonic S-scan images to detect subsurface weld defects and estimate their physical dimensions.
+
+## Pipeline
 
 ```text
 Raw Ultrasonic S-Scan
-          │
-          ▼
+        │
+        ▼
 Image Preprocessing
-          │
-          ▼
-ROI Extraction & Enhancement
-          │
-          ▼
-YOLOv8 Defect Detection
-          │
-          ▼
-Bounding Box Feature Extraction
+        │
+        ▼
+ROI Extraction
+        │
+        ▼
+YOLOv8 Detection
+        │
+        ▼
+Bounding Box Features
 (cx, cy, w, h, area)
-          │
-          ▼
+        │
+        ▼
 Regression Models
-          │
-          ▼
-Defect Width
-Defect Height
-Defect Depth
+        │
+        ▼
+Width • Height • Depth
 ```
-
----
-
-## Dataset
-
-The dataset consists of ultrasonic inspection scans collected from Friction Stir Welded specimens.
-
-The dataset contains both defective and defect-free weld scans to improve detector robustness and reduce false positives.
-
-### Quantification Dataset
-
-A separate quantification dataset was created containing:
-
-- Bounding box features extracted from defect regions
-- Measured defect dimensions obtained from inspection records
-
-Features investigated include:
-
-- Bounding box center coordinates (`cx`, `cy`)
-- Bounding box dimensions (`w`, `h`)
-- Bounding box area
-
----
 
 ## Image Preprocessing
 
-A custom preprocessing pipeline was developed to isolate relevant ultrasonic information and improve defect visibility.
+The preprocessing stage consists of:
 
-### Processing Steps
-
-1. Cropping to remove Scales
-2. Grayscale Conversion
-3. Gaussian Noise Reduction
-4. Contrast Enhancement using CLAHE
-5. Thresholding and Contour Detection
-6. ROI Identification 
-7. Triangular ROI Extraction using OpenCV's `minEnclosingTriangle()`
-8. Geometric Transformation and Normalization
-
-The resulting images contain only the relevant ultrasonic inspection region used for training and inference.
-
----
-
-## Data Annotation
-
-Defect regions were annotated using YOLO-format bounding boxes.
-
-### Annotation Workflow
-
-#### Manual Annotation
-
-- Expert-guided defect localization
-- Bounding box generation for training data
-- Quality verification of labels
-
-#### Semi-Automatic Annotation
-
-Several computer vision approaches were explored:
-
-- Thresholding
-- Contour Detection
-- Edge-Based Segmentation
-- ROI-Based Candidate Extraction
-
-These methods were explored to accelerate dataset annotation, but manual annotation was used in the end because of insufficient technical accuracy in the automatic approaches.
-
----
-
-## Defect Detection Model
-
-### YOLOv8 Nano
-
-The detection stage utilizes the YOLOv8 Nano architecture.
-
-#### Advantages
-
-- Lightweight architecture
-- Fast training and inference
-- Strong performance on limited dataset
-- Suitable for future deployment applications
-
-### Transfer Learning
-
-Training was performed using pretrained YOLOv8 weights to improve convergence and detection performance, given the constraint of a small dataset.
-
----
+- Image cropping
+- Grayscale conversion
+- Gaussian filtering
+- CLAHE contrast enhancement
+- ROI extraction
+- Geometric normalization
 
 ## Defect Quantification
 
-Following defect localization, bounding box features are extracted and used as inputs to regression models.
-
-### Target Variables
+Bounding box features extracted from detected defects are used to estimate:
 
 - Defect Width
 - Defect Height
 - Defect Depth
 
-### Regression Workflow
+Linear regression models were evaluated using Leave-One-Out Cross Validation (LOOCV).
 
-```text
-Detected Bounding Box
-        │
-        ▼
-Feature Extraction
-(cx, cy, w, h, area)
-        │
-        ▼
-Feature Selection
-        │
-        ▼
-Linear Regression Models
-        │
-        ▼
-Dimension Estimation
-```
-
-Feature importance studies were conducted to determine the most informative geometric features for each target dimension.
-
----
-
-## Training Configuration
-
-| Parameter | Value |
-|------------|---------|
-| Model | YOLOv8n |
-| Image Size | 640 × 640 |
-| Batch Size | 4 |
-| Epochs | 100 |
-| Framework | Ultralytics YOLOv8 |
-| Hardware | NVIDIA RTX 3050 Laptop GPU |
-
----
-
-## Detection Results
+### Detection Performance
 
 | Metric | Value |
-|----------|----------|
-| Precision | 1 |
+|---------|------:|
+| Precision | 1.000 |
 | Recall | 0.912 |
 | mAP@50 | 0.984 |
 | mAP@50-95 | 0.511 |
 
-These results demonstrate reliable defect localization despite a relatively limited training dataset.
-
----
-
-## Quantification Results
-
-Defect dimension estimation models were evaluated using Leave-One-Out Cross Validation (LOOCV).
-
-Performance metrics reported include:
-
-- Mean Absolute Error (MAE)
-- Root Mean Squared Error (RMSE)
-- Coefficient of Determination (R²)
-
-The regression framework enables automated estimation of physical defect dimensions directly from detected ultrasonic indications.
+### Quantification Performance
 
 | Target | MAE | RMSE |
-|---------|---------|---------|
+|---------|----:|-----:|
 | Width | 0.7359 | 0.9714 |
 | Height | 0.1491 | 0.2072 |
 | Depth | 0.2205 | 0.3247 |
 
-The moderate R² values obtained are largely attributable to the limited dataset size (49 samples). With such a small number of observations, regression models are more susceptible to noise, outliers, and overfitting, making highly accurate dimensional prediction challenging. Increasing the size and diversity of the quantification dataset is expected to significantly improve performance.
+---
+
+# Surface Defect Detection
+
+The surface defect pipeline detects visible weld defects directly from weld surface images using YOLOv8.
+
+## Semi-Supervised Annotation Workflow
+
+The dataset consists of **1,691 weld surface images**.
+
+Instead of manually annotating every image, a semi-supervised annotation strategy was adopted:
+
+1. Manually annotate 300 images.
+2. Train an initial YOLOv8 detector.
+3. Automatically annotate the remaining images using the trained model.
+4. Review and correct the generated annotations.
+5. Retrain YOLOv8 using the complete labeled dataset.
+
+This significantly reduced annotation effort while maintaining annotation quality.
+
+## Surface Defect Quantification
+
+Following defect detection, bounding boxes are used to quantify surface defects relative to the weld geometry.
+
+Measurements include:
+
+- Excess flash length relative to weld length
+- Groove area relative to weld area
+- Keyhole defect area relative to weld area
+
+Using normalized measurements enables consistent comparison of weld quality across specimens of different sizes.
 
 ---
 
@@ -227,15 +131,16 @@ FSW_Defect_Detection/
 ├── dataset/
 │   ├── surface_defects/
 │   │   ├── images/
-│   │   └── labels/
-│   │
-│   ├── internal_defects/
-│   │   ├── images/
 │   │   ├── labels/
-│   │   ├── quantification/
-│   │   │   └── quantification_ds.csv
-│   │   ├── raw_images/
 │   │   └── weld.yaml
+│   │
+│   └── internal_defects/
+│       ├── images/
+│       ├── labels/
+│       ├── raw_images/
+│       ├── quantification/
+│       │   └── quantification_ds.csv
+│       └── weld.yaml
 │
 ├── internal_defects/
 │   ├── preprocess.py
@@ -245,14 +150,8 @@ FSW_Defect_Detection/
 ├── surface_defects/
 │   └── train.py
 │
-├── runs/
-│
-├── yolov8n.pt
-│
 ├── requirements.txt
-│
-├── .gitignore
-│
+├── yolov8n.pt
 └── README.md
 ```
 
@@ -274,46 +173,32 @@ pip install -r requirements.txt
 
 ## Training
 
-```bash
-python yolo/train.py
-```
-
----
-
-## Quantification
+### Internal Defect Detection
 
 ```bash
-python linear_regressor/linear_regressor.py
+python internal_defects/train.py
 ```
 
-This script performs feature evaluation, model training, and dimensional prediction experiments.
-
----
-
-## Reproducibility
-
-To ensure compatibility and reproduce the same software environment used during development and experimentation, install all dependencies using the provided `requirements.txt` file:
+### Surface Defect Detection
 
 ```bash
-pip install -r requirements.txt
+python surface_defects/train.py
 ```
-
-This installs the exact package versions used for preprocessing, model training, defect detection, and dimensional quantification.
 
 ---
 
 ## Future Work
 
-- Expand dataset size
-- Explore nonlinear regression models
-- Investigate neural-network-based quantification methods
-- Extend framework to additional weld inspection techniques
+- Develop a desktop interface that accepts ultrasonic S-scan images and automatically predicts internal defect dimensions.
+- Integrate the surface defect detection model with a real-time camera for live weld inspection.
+- Investigate nonlinear regression and deep learning methods for improved defect quantification.
+- Expand the datasets to improve detection robustness and quantification accuracy.
 
 ---
 
 ## Acknowledgements
 
-Developed during an internship at IIT Goa as part of research on automated ultrasonic weld inspection, defect localization, and dimensional quantification using computer vision and machine learning.
+Developed during an internship at **Indian Institute of Technology Goa** as part of research on automated weld inspection using computer vision and machine learning.
 
 ---
 
