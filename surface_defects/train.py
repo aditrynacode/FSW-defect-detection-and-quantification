@@ -37,9 +37,9 @@ def main():
         verbose=True,
 
         mosaic=0.0,
-        fliplr=0.5,
-        translate=0.1,
-        scale=0.3
+        fliplr=1,
+        translate=0.15,
+        scale=0.4
     )
 
 if __name__ == "__main__":

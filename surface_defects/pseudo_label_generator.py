@@ -4,7 +4,7 @@ import cv2
 import shutil
 from collections import Counter
 
-MODEL_PATH = r"runs/detect/runs/surface_defect-2/weights/best.pt"
+MODEL_PATH = r"runs/detect/runs/surface_defect-6/weights/best.pt"
 IMAGE_FOLDER = r"dataset/surface_defects/unlabelled_images"
 LABEL_FOLDER = r"dataset/surface_defects/pseudo_labels"
 
@@ -74,7 +74,7 @@ for cls, count in sorted(prediction_counter.items()):
 
 print("\nPseudo-label generation complete!")
 
-output_dir = r"archive"
+output_dir = r"Pseudo_labels_archive"
 
 class_names = [
     "Excess Flash",
