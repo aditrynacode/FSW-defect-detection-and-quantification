@@ -21,7 +21,7 @@ def main():
 
     model.train(
         data="dataset/surface_defects/weld.yaml",
-        epochs=100,
+        epochs=150,
         imgsz=640,
         batch=4,
         device=0,    
@@ -29,7 +29,7 @@ def main():
         optimizer="auto",
         lr0=0.01,
         lrf=0.01,
-        patience=20,
+        patience=30,
         project="runs",
         name="surface_defect",
         pretrained=True,
@@ -37,9 +37,9 @@ def main():
         verbose=True,
 
         mosaic=0.0,
-        fliplr=1,
-        translate=0.15,
-        scale=0.4
+        fliplr=0.5,
+        translate=0.1,
+        scale=0.3
     )
 
 if __name__ == "__main__":
