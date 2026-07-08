@@ -97,15 +97,17 @@ The surface defect pipeline detects visible weld defects directly from weld surf
 
 ## Semi-Supervised Annotation Workflow
 
-The dataset consists of **1,691 weld surface images**.
+The dataset consists of **1,145 weld surface images**.
 
 Instead of manually annotating every image, a semi-supervised annotation strategy was adopted:
 
 1. Manually annotate 300 images.
 2. Train an initial YOLOv8 detector.
-3. Automatically annotate the remaining images using the trained model.
+3. Automatically annotate 100-200 more images using the trained model.
 4. Review and correct the generated annotations.
-5. Retrain YOLOv8 using the complete labeled dataset.
+5. Retrain YOLOv8 using the initial + newly labeled dataset.
+6. Repeat steps 3-5 until complete dataset is annotated.
+7. Retrain YOLOv8 using the the complete labeled dataset.
 
 This significantly reduced annotation effort while maintaining annotation quality.
 
