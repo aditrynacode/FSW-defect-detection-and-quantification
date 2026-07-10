@@ -21,7 +21,7 @@ def main():
 
     model.train(
         data="dataset/surface_defects/weld.yaml",
-        epochs=150,
+        epochs=250,
         imgsz=640,
         batch=4,
         device=0,    
