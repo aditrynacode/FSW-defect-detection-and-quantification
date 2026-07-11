@@ -1,7 +1,7 @@
 from ultralytics import YOLO
 import cv2
 
-MODEL_PATH = r"runs/detect/runs/surface_defect-12/weights/best.pt"
+MODEL_PATH = r"runs/detect/runs/surface_defect-16/weights/best.pt"
 IMAGE_PATH = r"C:\Users\adity\FSW_Defect_Detection\dataset\surface_defects\unlabelled_images\DSC_0289.JPG"
 
 model = YOLO(MODEL_PATH)
