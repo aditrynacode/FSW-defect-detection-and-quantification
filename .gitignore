@@ -26,3 +26,5 @@ Thumbs.db
 *.cache
 
 /dataset
+
+/comparison_runs
