@@ -2,11 +2,11 @@ from ultralytics import YOLO
 import cv2
 import os
 
-MODEL_PATH = r"runs/detect/runs/surface_defect-16/weights/best.pt"
+MODEL_PATH = r"runs/detect/runs/yolo11s/weights/best.pt"
 IMAGE_FOLDER_PATH = r"C:\Users\adity\FSW_Defect_Detection\dataset\surface_defects\unlabelled_images"
 
 model = YOLO(MODEL_PATH)
-model.names[3] = "Weld Junction"
+#model.names[3] = "Weld Junction"
 
 results = model.predict(
     source=IMAGE_FOLDER_PATH,
@@ -47,10 +47,10 @@ for result in results:
 
     print(f"\nQuantification data of Image: {os.path.basename(result.path)}\n")
 
-    if "Weld Jumction" not in measurements:
+    if "Weld Junction" not in measurements:
         print("Weld Junction not detected. Cannot quantify.")
     else:
-        weld = measurements["Weld Jumction"][0]
+        weld = measurements["Weld Junction"][0]
 
         defect_classes = [
             "Excess Flash",

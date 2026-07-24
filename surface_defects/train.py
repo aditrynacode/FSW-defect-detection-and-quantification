@@ -21,7 +21,7 @@ def main():
 
     model.train(
         data="dataset/surface_defects/weld.yaml",
-        epochs=250,
+        epochs=2,
         imgsz=640,
         batch=4,
         device=0,    
@@ -31,7 +31,7 @@ def main():
         lrf=0.01,
         patience=30,
         project="runs",
-        name="surface_defect",
+        name="yolov8n",
         pretrained=True,
         save=True,
         verbose=True,
